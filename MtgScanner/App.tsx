@@ -1,27 +1,51 @@
-import {FlatList, StyleSheet, View} from 'react-native';
+import {
+    FlatList,
+    StyleSheet,
+    View,
+    Button
+} from 'react-native';
 import {useState} from "react";
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
 
 export default function App() {
-    const [courseGoals, setCourseGoals] : any = useState([]);
+    const [modalIsVisible, setModalIsVisible] = useState(false);
+    const [courseGoals, setCourseGoals]: any = useState([]);
+
+    function startAddGoalHandler() {
+        setModalIsVisible(true);
+    }
+
+    function endAddGoalHandler() {
+        setModalIsVisible(false);
+    }
 
     function addGoalHandler(enteredGoalText: string) {
-        setCourseGoals((currentCourseGoals: any[])=> [
+        setCourseGoals((currentCourseGoals: any[]) => [
             ...currentCourseGoals,
-            { text: enteredGoalText, id: Math.random().toString() }
+            {text: enteredGoalText, id: Math.random().toString()}
         ]);
+        endAddGoalHandler();
     }
 
     function deleteGoalHandler(id: number) {
         setCourseGoals((currentCourseGoals: any[]) => {
-            return currentCourseGoals.filter((goal) => goal.id !== id) ;
+            return currentCourseGoals.filter((goal) => goal.id !== id);
         });
     }
 
     return (
         <View style={styles.appContainer}>
-            <GoalInput onAddGoal={addGoalHandler}/>
+            <Button
+                title='Add New Goal'
+                color='#5e0acc'
+                onPress={startAddGoalHandler}
+            />
+            <GoalInput
+                visible={modalIsVisible}
+                onAddGoal={addGoalHandler}
+                onCancel={endAddGoalHandler}
+            />
             <View style={styles.goalsContainer}>
                 <FlatList
                     data={courseGoals}
@@ -29,8 +53,7 @@ export default function App() {
                         return <GoalItem
                             text={itemData.item.text}
                             id={itemData.item.id}
-                            onDeleteItem={deleteGoalHandler}
-                        />;
+                            onDeleteItem={deleteGoalHandler}/>;
                     }}
                     keyExtractor={(item, index) => {
                         return item.id;
